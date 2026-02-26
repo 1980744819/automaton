@@ -4,11 +4,18 @@ FROM 192.168.1.7:30002/base/node:25-alpine
 # 设置工作目录
 WORKDIR /app
 
+# 设置国内镜像代理
+# 设置 npm 镜像源
+RUN npm config set registry https://registry.npmmirror.com
+
 # 复制 package.json 和 pnpm-lock.yaml 文件
 COPY package.json pnpm-lock.yaml ./
 
 # 安装 pnpm
 RUN npm install -g pnpm
+
+# 设置 pnpm 镜像源
+RUN pnpm config set registry https://registry.npmmirror.com
 
 # 安装依赖
 RUN pnpm install
