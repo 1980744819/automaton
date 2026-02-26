@@ -55,71 +55,15 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          env:
-            {{- if .Values.env.enabled }}
-            {{- $configMapName := printf "%s-config" .Release.Name }}
-            - name: NODE_ENV
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $configMapName | quote }}
-                  key: NODE_ENV
-            - name: AUTOMATON_SKIP_SETUP
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $configMapName | quote }}
-                  key: AUTOMATON_SKIP_SETUP
-            - name: AUTOMATON_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $configMapName | quote }}
-                  key: AUTOMATON_NAME
-            - name: AUTOMATON_GENESIS_PROMPT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $configMapName | quote }}
-                  key: AUTOMATON_GENESIS_PROMPT
-            - name: AUTOMATON_CREATOR_ADDRESS
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $configMapName | quote }}
-                  key: AUTOMATON_CREATOR_ADDRESS
-            - name: CONWAY_API_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $configMapName | quote }}
-                  key: CONWAY_API_URL
-            - name: NODE_OPTIONS
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $configMapName | quote }}
-                  key: NODE_OPTIONS
-            - name: CONWAY_API_KEY
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ $configMapName | quote }}
-                  key: CONWAY_API_KEY
-            {{- else }}
-            # 默认环境变量（当 env.enabled 为 false 时使用）
-            - name: NODE_ENV
-              value: production
-            - name: AUTOMATON_SKIP_SETUP
-              value: "true"
-            - name: AUTOMATON_NAME
-              value: "{{ .Release.Name }}"
-            - name: AUTOMATON_GENESIS_PROMPT
-              value: "You are a helpful AI assistant. Your goal is to help humans and other agents."
-            - name: AUTOMATON_CREATOR_ADDRESS
-              value: "0x0000000000000000000000000000000000000000"
-            - name: CONWAY_API_URL
-              value: "https://api.conway.tech"
-            - name: NODE_OPTIONS
-              value: "--max-old-space-size=2048"
-            {{- end }}
           volumeMounts:
             - name: automaton-data
               mountPath: /app/data
+            {{- if .Values.env.enabled }}
             - name: automaton-config
-              mountPath: /app/config
+              mountPath: /app
+              subPath: .env
+              readOnly: true
+            {{- end }}
       volumes:
         - name: automaton-data
           {{- if .Values.persistence.enabled }}
@@ -133,6 +77,9 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- if .Values.env.enabled }}
         - name: automaton-config
-          emptyDir: {}
+          configMap:
+            name: {{ .Values.env.configMapName | quote }}
+        {{- end }}
       restartPolicy: {{ .Values.deployment.restartPolicy }}

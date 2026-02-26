@@ -26,10 +26,12 @@ resources:
 
 # Environment variables configuration
 env:
-  # Use external ConfigMap for environment variables
+  # Enable external .env file mounting
   enabled: true
-  # ConfigMap name for environment variables
-  configMapName: "{{ .Release.Name }}-config"
+  # External ConfigMap name for .env file (manually created)
+  configMapName: "automaton-config"
+  # Secret name for sensitive environment variables (optional)
+  secretName: ""
 
 
 # Storage configuration
