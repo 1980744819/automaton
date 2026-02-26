@@ -1,0 +1,94 @@
+# Default values for automaton
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates
+
+# Image configuration
+image:
+  repository: node
+  tag: 20-alpine
+  pullPolicy: IfNotPresent
+
+# Deployment configuration
+deployment:
+  replicas: 1
+  strategy:
+    type: Recreate
+  restartPolicy: Always
+
+# Resources configuration
+resources:
+  requests:
+    cpu: 1
+    memory: 2Gi
+  limits:
+    cpu: 2
+    memory: 4Gi
+
+# Environment variables
+env:
+  # Node.js environment
+  NODE_ENV: production
+  # Automaton configuration
+  AUTOMATON_NAME: ""
+  AUTOMATON_GENESIS_PROMPT: ""
+  AUTOMATON_CREATOR_ADDRESS: ""
+  # Conway API configuration
+  CONWAY_API_KEY: ""
+  CONWAY_API_URL: "https://api.conway.tech"
+
+# Storage configuration
+persistence:
+  enabled: true
+  size: 10Gi
+  accessMode: ReadWriteOnce
+  storageClass: "local-storage-nvme"
+  # If using an existing PVC
+  existingClaim: ""
+
+# Service configuration
+service:
+  type: NodePort
+  port: 3000
+  # For NodePort type
+  nodePort: "31084"
+  # For LoadBalancer type
+  loadBalancerIP: ""
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: automaton.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}

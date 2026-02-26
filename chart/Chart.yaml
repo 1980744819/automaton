@@ -1,0 +1,18 @@
+apiVersion: v2
+name: automaton
+version: 0.2.0
+appVersion: 0.2.0
+description: Self-Improving, Self-Replicating, Sovereign AI
+type: application
+keywords:
+  - autonomous-agent
+  - sovereign-ai
+  - web4
+  - conway
+  - self-replicating
+maintainers:
+  - name: Conway Research
+    email: info@conway.tech
+home: https://conway.tech
+sources:
+  - https://github.com/Conway-Research/automaton
