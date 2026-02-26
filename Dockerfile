@@ -4,6 +4,15 @@ FROM 192.168.1.7:30002/base/node:25-alpine
 # 设置工作目录
 WORKDIR /app
 
+# 设置环境变量
+ENV NODE_ENV=production
+# 设置代理
+ENV http_proxy=http://192.168.1.7:7890 \
+    https_proxy=http://192.168.1.7:7890 \
+    # 设置 node-gyp 下载源，加速 Node.js 头文件下载
+    NODE_GYP_URL=https://npmmirror.com/mirrors/node \
+    no_proxy=localhost,127.0.0.1,192.168.0.0/16,10.0.0.0/8
+
 # 设置国内镜像代理
 # 1. 设置 Alpine 包管理镜像源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
@@ -18,9 +27,8 @@ RUN apk add --no-cache \
     libc-dev \
     sqlite-dev
 
-# 3. 设置 npm 镜像源和 node-gyp 配置
-RUN npm config set registry https://registry.npmmirror.com && \
-    npm config set disturl https://npmmirror.com/mirrors/node/
+# 3. 设置 npm 镜像源
+RUN npm config set registry https://registry.npmmirror.com
 
 # 复制 package.json 和 pnpm-lock.yaml 文件
 COPY package.json pnpm-lock.yaml ./
@@ -42,13 +50,6 @@ RUN pnpm build
 
 # 暴露端口
 EXPOSE 3000
-
-# 设置环境变量
-ENV NODE_ENV=production
-# 设置代理
-ENV http_proxy=http://192.168.1.7:7890 \
-    https_proxy=http://192.168.1.7:7890 \
-    no_proxy=localhost,127.0.0.1,192.168.0.0/16,10.0.0.0/8
 
 # 运行命令
 CMD ["node", "dist/index.js", "--run"]
