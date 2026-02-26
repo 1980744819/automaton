@@ -18,8 +18,9 @@ RUN apk add --no-cache \
     libc-dev \
     sqlite-dev
 
-# 3. 设置 npm 镜像源
-RUN npm config set registry https://registry.npmmirror.com
+# 3. 设置 npm 镜像源和 node-gyp 配置
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm config set disturl https://npmmirror.com/mirrors/node/
 
 # 复制 package.json 和 pnpm-lock.yaml 文件
 COPY package.json pnpm-lock.yaml ./
