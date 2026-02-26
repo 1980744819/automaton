@@ -59,7 +59,8 @@ spec:
             - name: automaton-data
               mountPath: /app/data
             - name: automaton-config
-              mountPath: /app
+              mountPath: /app/.env
+              subPath: .env
               readOnly: true
       volumes:
         - name: automaton-data
@@ -77,4 +78,7 @@ spec:
         - name: automaton-config
           configMap:
             name: {{ .Values.env.configMapName | quote }}
+            items:
+              - key: .env
+                path: .env
       restartPolicy: {{ .Values.deployment.restartPolicy }}
