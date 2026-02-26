@@ -56,9 +56,64 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
-            {{- range $key, $value := .Values.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
+            # 从 ConfigMap 获取非敏感环境变量
+            {{- if .Values.env.enabled }}
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: NODE_ENV
+            - name: AUTOMATON_SKIP_SETUP
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: AUTOMATON_SKIP_SETUP
+            - name: AUTOMATON_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: AUTOMATON_NAME
+            - name: AUTOMATON_GENESIS_PROMPT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: AUTOMATON_GENESIS_PROMPT
+            - name: AUTOMATON_CREATOR_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: AUTOMATON_CREATOR_ADDRESS
+            - name: CONWAY_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: CONWAY_API_URL
+            - name: NODE_OPTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: NODE_OPTIONS
+            - name: CONWAY_API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+                  key: CONWAY_API_KEY
+            {{- else }}
+            # 默认环境变量（当 env.enabled 为 false 时使用）
+            - name: NODE_ENV
+              value: production
+            - name: AUTOMATON_SKIP_SETUP
+              value: "true"
+            - name: AUTOMATON_NAME
+              value: "{{ .Release.Name }}"
+            - name: AUTOMATON_GENESIS_PROMPT
+              value: "You are a helpful AI assistant. Your goal is to help humans and other agents."
+            - name: AUTOMATON_CREATOR_ADDRESS
+              value: "0x0000000000000000000000000000000000000000"
+            - name: CONWAY_API_URL
+              value: "https://api.conway.tech"
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size=2048"
             {{- end }}
           volumeMounts:
             - name: automaton-data

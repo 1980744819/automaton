@@ -24,17 +24,13 @@ resources:
     cpu: 2
     memory: 4Gi
 
-# Environment variables
+# Environment variables configuration
 env:
-  # Node.js environment
-  NODE_ENV: production
-  # Automaton configuration
-  AUTOMATON_NAME: ""
-  AUTOMATON_GENESIS_PROMPT: ""
-  AUTOMATON_CREATOR_ADDRESS: ""
-  # Conway API configuration
-  CONWAY_API_KEY: ""
-  CONWAY_API_URL: "https://api.conway.tech"
+  # Use external ConfigMap for environment variables
+  enabled: true
+  # ConfigMap name for environment variables
+  configMapName: "{{ .Release.Name }}-config"
+
 
 # Storage configuration
 persistence:

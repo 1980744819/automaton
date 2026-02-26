@@ -1,0 +1,21 @@
+{{- if .Values.env.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.env.configMapName | default (printf "%s-config" .Release.Name) }}
+  labels:
+    {{- include "automaton.labels" . | nindent 4 }}
+data:
+  # Node.js environment
+  NODE_ENV: production
+  # Automaton configuration
+  AUTOMATON_SKIP_SETUP: "true"
+  AUTOMATON_NAME: {{ .Release.Name | quote }}
+  AUTOMATON_GENESIS_PROMPT: "You are a helpful AI assistant. Your goal is to help humans and other agents."
+  AUTOMATON_CREATOR_ADDRESS: "0x0000000000000000000000000000000000000000"
+  # Conway API configuration
+  CONWAY_API_URL: "https://api.conway.tech"
+  CONWAY_API_KEY: ""
+  # Node.js configuration
+  NODE_OPTIONS: "--max-old-space-size=2048"
+{{- end -}}
