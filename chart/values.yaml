@@ -26,12 +26,23 @@ resources:
 
 # Environment variables configuration
 env:
-  # Enable external .env file mounting
   enabled: true
-  # External ConfigMap name for .env file (manually created)
-  configMapName: "automaton-config"
-  # Secret name for sensitive environment variables (optional)
-  secretName: ""
+  configMapName: automaton-config
+
+# Additional volumes on the output Deployment definition.
+volumes:
+  - name: automaton-config-volume
+    configMap:
+      name: automaton-config
+      items:
+        - key: .env
+          path: .env
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts:
+  - name: automaton-config-volume # 与 volumes 中名称一致
+    mountPath: /app # 容器内挂载路径
+    readOnly: true # 可读写（配置文件可设为 true）
 
 
 # Storage configuration

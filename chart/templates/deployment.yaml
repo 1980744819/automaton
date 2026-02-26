@@ -58,12 +58,9 @@ spec:
           volumeMounts:
             - name: automaton-data
               mountPath: /app/data
-            {{- if .Values.env.enabled }}
             - name: automaton-config
               mountPath: /app
-              subPath: .env
               readOnly: true
-            {{- end }}
       volumes:
         - name: automaton-data
           {{- if .Values.persistence.enabled }}
@@ -77,9 +74,7 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        {{- if .Values.env.enabled }}
         - name: automaton-config
           configMap:
             name: {{ .Values.env.configMapName | quote }}
-        {{- end }}
       restartPolicy: {{ .Values.deployment.restartPolicy }}
