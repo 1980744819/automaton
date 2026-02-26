@@ -9,7 +9,7 @@
 
 import { getWallet, getAutomatonDir } from "./identity/wallet.js";
 import { provision, loadApiKeyFromConfig } from "./identity/provision.js";
-import { loadConfig, resolvePath } from "./config.js";
+import { loadConfig, loadConfigFromEnv, resolvePath } from "./config.js";
 import { createDatabase } from "./state/database.js";
 import { createConwayClient } from "./conway/client.js";
 import { createInferenceClient } from "./conway/inference.js";
@@ -173,11 +173,22 @@ Version:    ${config.version}
 async function run(): Promise<void> {
   logger.info(`[${new Date().toISOString()}] Conway Automaton v${VERSION} starting...`);
 
-  // Load config — first run triggers interactive setup wizard
+  // Load config — first run triggers interactive setup wizard only if no env vars
   let config = loadConfig();
   if (!config) {
-    const { runSetupWizard } = await import("./setup/wizard.js");
-    config = await runSetupWizard();
+    // Check if we have required env vars
+    const requiredEnvVars = ['AUTOMATON_NAME', 'AUTOMATON_GENESIS_PROMPT', 'AUTOMATON_CREATOR_ADDRESS'];
+    const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+    
+    if (missingEnvVars.length === 0) {
+      // All required env vars present, create config from env
+      config = loadConfigFromEnv()!;
+      logger.info('Config loaded from environment variables');
+    } else {
+      // Missing env vars, run setup wizard
+      const { runSetupWizard } = await import("./setup/wizard.js");
+      config = await runSetupWizard();
+    }
   }
 
   // Load wallet
