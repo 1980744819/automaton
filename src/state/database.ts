@@ -124,6 +124,10 @@ export function createDatabase(dbPath: string): AutomatonDatabase {
   };
 
   const setIdentity = (key: string, value: string): void => {
+    if (!value) {
+      logger.warn(`setIdentity: value is null/undefined for key '${key}', skipping`);
+      return;
+    }
     db.prepare(
       "INSERT OR REPLACE INTO identity (key, value) VALUES (?, ?)",
     ).run(key, value);
