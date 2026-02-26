@@ -5,7 +5,20 @@ FROM 192.168.1.7:30002/base/node:25-alpine
 WORKDIR /app
 
 # 设置国内镜像代理
-# 设置 npm 镜像源
+# 1. 设置 Alpine 包管理镜像源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+# 2. 安装构建依赖（用于 node-gyp 编译原生模块）
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    make \
+    gcc \
+    g++ \
+    libc-dev \
+    sqlite-dev
+
+# 3. 设置 npm 镜像源
 RUN npm config set registry https://registry.npmmirror.com
 
 # 复制 package.json 和 pnpm-lock.yaml 文件
