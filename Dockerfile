@@ -20,6 +20,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 2. 安装构建依赖（用于 node-gyp 编译原生模块）
 RUN apk add --no-cache \
+    git \
     python3 \
     py3-pip \
     make \
