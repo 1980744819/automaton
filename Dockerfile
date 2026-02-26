@@ -10,7 +10,8 @@ ENV NODE_ENV=production
 ENV http_proxy=http://192.168.1.7:7890 \
     https_proxy=http://192.168.1.7:7890 \
     # 设置 node-gyp 下载源，加速 Node.js 头文件下载
-    NODE_GYP_URL=https://npmmirror.com/mirrors/node \
+    NODE_DIST_URL=https://npmmirror.com/mirrors/node \
+    NODEJS_ORG_MIRROR=https://npmmirror.com/mirrors/node/ \
     no_proxy=localhost,127.0.0.1,192.168.0.0/16,10.0.0.0/8
 
 # 设置国内镜像代理
